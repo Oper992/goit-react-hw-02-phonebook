@@ -1,5 +1,8 @@
 import { Component } from 'react';
 import { nanoid } from 'nanoid';
+import ContactList from './ContactList/ContactList';
+import ContactForm from './ContactForm/ContactForm';
+import Filter from './Filter/Filter';
 
 export class App extends Component {
   state = {
@@ -9,9 +12,9 @@ export class App extends Component {
       { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
       { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
     ],
+    filter: '',
     name: '',
     number: '',
-    filter: '',
   };
 
   handleSubmit = evt => {
@@ -20,73 +23,56 @@ export class App extends Component {
     const contactName = form.elements.name.value;
     const contactNumber = form.elements.number.value;
     const id = nanoid();
-    const contactsState = this.state.contacts;
-    contactsState.push({ id: id, name: contactName, number: contactNumber });
 
-    this.setState({
-      contacts: contactsState,
-    });
+    if (this.state.contacts.some(({ name }) => name === contactName)) {
+      window.alert(`${contactName} is already in contacts`);
+    } else {
+      this.setState(prevState => {
+        const newContactsArray = [...prevState.contacts];
+        newContactsArray.push({
+          id: id,
+          name: contactName,
+          number: contactNumber,
+        });
+
+        return {
+          contacts: newContactsArray,
+        };
+      });
+    }
 
     form.reset();
   };
 
-  Contacts({ contacts, filter }) {
-    const filteredContactsArray = contacts.filter(({ name }) =>
-      name.includes(filter)
-    );
-
-    return (
-      <>
-        <ul>
-          {filter
-            ? filteredContactsArray.map(({ name, id, number }) => (
-                <li key={id}>
-                  {name}: {number}
-                </li>
-              ))
-            : contacts.map(({ name, id, number }) => (
-                <li key={id}>
-                  {name}: {number}
-                </li>
-              ))}
-        </ul>
-      </>
-    );
-  }
-
   contactsFilter = evt => {
-    const inputText = evt.target.value.toLowerCase();
+    this.setState({ filter: evt.target.value });
+  };
 
-    this.setState({ filter: inputText });
+  deleteContact = evt => {
+    this.setState(prevState => {
+      const oldContactsArray = [...prevState.contacts];
+      const newContactsArray = oldContactsArray.filter(
+        ({ name }) => name !== evt.target.value
+      );
+
+      return { contacts: newContactsArray };
+    });
   };
 
   render() {
-    const { contacts, filter } = this.state;
+    const { contacts, filter, name, number } = this.state;
 
     return (
       <>
         <h1>Phonebook</h1>
-        <form onSubmit={this.handleSubmit}>
-          <input
-            type="text"
-            name="name"
-            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-            title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-            required
-          />
-          <input
-            type="tel"
-            name="number"
-            pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-            title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-            required
-          />
-          <button type="submit">Add contact</button>
-        </form>
+        <ContactForm func={this.handleSubmit} />
         <h2>Contacts</h2>
-        <p>Find contacts by name</p>
-        <input type="filter" value={filter} onChange={this.contactsFilter} />
-        <this.Contacts contacts={contacts} filter={filter} />
+        <Filter filter={filter} func={this.contactsFilter} />
+        <ContactList
+          contacts={contacts}
+          filter={filter}
+          func={this.deleteContact}
+        />
       </>
     );
   }
