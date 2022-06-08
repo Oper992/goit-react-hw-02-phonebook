@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 
-export default function ContactForm({ func }) {
+export default function ContactForm({ handleSubmit }) {
   return (
-    <form onSubmit={func}>
+    <form onSubmit={handleSubmit}>
       <input
         type="text"
         name="name"
@@ -23,5 +23,5 @@ export default function ContactForm({ func }) {
 }
 
 ContactForm.propTypes = {
-  func: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
 };

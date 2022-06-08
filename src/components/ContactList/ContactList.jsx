@@ -1,18 +1,18 @@
 import PropTypes from 'prop-types';
 
-export default function ContactList({ contacts, filter, func }) {
-  const filteredContactsArray = contacts.filter(({ name }) =>
-    name.toLowerCase().includes(filter.toLowerCase())
-  );
-
+export default function ContactList({
+  filteredContacts,
+  contacts,
+  deleteContact,
+}) {
   return (
     <>
       <ul>
-        {filter
-          ? filteredContactsArray.map(({ name, id, number }) => (
+        {filteredContacts
+          ? filteredContacts().map(({ name, id, number }) => (
               <li key={id}>
                 {name}: {number}
-                <button type="button" value={name} onClick={func}>
+                <button type="button" value={name} onClick={deleteContact}>
                   Delete
                 </button>
               </li>
@@ -20,7 +20,7 @@ export default function ContactList({ contacts, filter, func }) {
           : contacts.map(({ name, id, number }) => (
               <li key={id}>
                 {name}: {number}
-                <button type="button" value={name} onClick={func}>
+                <button type="button" value={name} onClick={deleteContact}>
                   Delete
                 </button>
               </li>
@@ -31,7 +31,13 @@ export default function ContactList({ contacts, filter, func }) {
 }
 
 ContactList.propTypes = {
-  contacts: PropTypes.array.isRequired,
-  filter: PropTypes.string.isRequired,
-  func: PropTypes.func.isRequired,
+  contacts: PropTypes.arrayOf(
+    PropTypes.exact({
+      name: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+      number: PropTypes.string.isRequired,
+    })
+  ),
+  deleteContact: PropTypes.func.isRequired,
+  filteredContacts: PropTypes.func.isRequired,
 };
