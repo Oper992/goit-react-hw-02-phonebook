@@ -1,12 +1,17 @@
 import PropTypes from 'prop-types';
+import { Component } from 'react';
 
-export default function Filter({ filter, addToFilter }) {
-  return (
-    <>
-      <p>Find contacts by name</p>
-      <input type="filter" value={filter} onChange={addToFilter} />
-    </>
-  );
+export default class Filter extends Component {
+  render() {
+    const { filter, addToFilter } = this.props;
+
+    return (
+      <>
+        <p>Find contacts by name</p>
+        <input type="filter" value={filter} onChange={addToFilter} />
+      </>
+    );
+  }
 }
 
 Filter.propTypes = {

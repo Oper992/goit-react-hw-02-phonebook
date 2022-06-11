@@ -15,11 +15,7 @@ export class App extends Component {
     filter: '',
   };
 
-  handleSubmit = evt => {
-    evt.preventDefault();
-    const form = evt.currentTarget;
-    const contactName = form.elements.name.value;
-    const contactNumber = form.elements.number.value;
+  addContacts = (contactName, contactNumber) => {
     const id = nanoid();
 
     if (
@@ -42,12 +38,6 @@ export class App extends Component {
         };
       });
     }
-
-    form.reset();
-  };
-
-  addToFilter = evt => {
-    this.setState({ filter: evt.target.value });
   };
 
   filteredContacts = () => {
@@ -56,6 +46,10 @@ export class App extends Component {
     return contacts.filter(({ name }) =>
       name.toLowerCase().includes(filter.toLowerCase())
     );
+  };
+
+  addToFilter = e => {
+    this.setState({ filter: e.target.value });
   };
 
   deleteContact = evt => {
@@ -70,16 +64,13 @@ export class App extends Component {
   };
 
   render() {
-    const { filter, contacts } = this.state;
-
     return (
       <>
         <h1>Phonebook</h1>
-        <ContactForm handleSubmit={this.handleSubmit} />
+        <ContactForm addContacts={this.addContacts} />
         <h2>Contacts</h2>
-        <Filter filter={filter} addToFilter={this.addToFilter} />
+        <Filter filter={this.state.filter} addToFilter={this.addToFilter} />
         <ContactList
-          contacts={contacts}
           filteredContacts={this.filteredContacts}
           deleteContact={this.deleteContact}
         />
